@@ -10,9 +10,10 @@ import User from './components/users/User';
 import './App.css';
 
 class App extends Component {
-
+  //use state in functional component
   state = {
     users : [],
+    repos : [],
     user : {},
     loading : false,
     alert : null
@@ -45,6 +46,16 @@ class App extends Component {
 
   }
 
+  //get User repos
+  getUserRepos = async (username) => {
+    this.setState({loading : true});
+
+    const res = await axios.get(`https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc&client_id=${process.env.REACT_APP_GITHUB_CLIENT_ID}&client_secret=${process.env.REACT_APP_GITHUB_CLIENT_SECRET}`);
+
+    this.setState({repos : res.data , loading : false});
+
+  }
+
   clearUsers = () => {
     // console.log('clear');
     // this.state.users = [];
@@ -61,7 +72,7 @@ class App extends Component {
   }
 
   render(){
-      const {loading , user, users } = this.state;
+      const {loading , user, repos, users } = this.state;
 
       return (
       <Router>
@@ -69,18 +80,24 @@ class App extends Component {
           <Navbar title = 'github finder' />
           <div className="container">
             <Alert alert = {this.state.alert} />
+
             <Switch>
+
               <Route exact path = "/" render= {props => (
                 <Fragment>
                   <Search searchUsers={this.searchUsers} clearUsers = {this.clearUsers} showClear={users.length === 0 ? false : true} setAlert = {this.setAlert} />
                   <Users loading = {loading} users = {users} />
                 </Fragment>
               )} />
+
               <Route exact path = '/about' component={About} />
+
               <Route exact path = '/user/:login' render = {props => (
-                <User {...props} getUser = {this.getUser} user = {user} loading = {loading} />
+                <User {...props} getUser = {this.getUser} getUserRepos = {this.getUserRepos} user = {user} loading = {loading} repos = {repos} />
               )} />
+
             </Switch>
+
           </div>
         </div>
       </Router>
