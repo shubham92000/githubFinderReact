@@ -1,19 +1,18 @@
-import React , {Fragment , useState } from 'react'
+import React , {Fragment } from 'react'
 import { BrowserRouter as Router , Switch , Route} from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
-import Users from './components/users/Users';
-import Search from './components/users/Search';
+import Home from  './components/pages/Home';
 import Alert from './components/layout/Alert';
 import About from './components/pages/About';
 import User from './components/users/User';
 import GithubState from './context/github/GithubState';
+import AlertState from './context/alert/AlertState';
+import NotFound from './components/pages/NotFound';
 import './App.css';
 
 const App = () => {
   //use state in functional component
   
-  const [alert , setAlert] = useState(null);
-
   // async componentDidMount(){
   //   this.setState({loading : true});
 
@@ -22,43 +21,43 @@ const App = () => {
   //   this.setState({users : res.data , loading : false});   
   // }
 
-  const setAlertMsg = (msg , type) => {
-    setAlert({msg , type});
-    setTimeout( () => {
-      setAlert(null);
-    } ,2000);
-  }
 
   return (
   <GithubState>
-    <Router>
-      <div className="App">
-        <Navbar title = 'github finder' />
-        <div className="container">
-          <Alert alert = {alert} />
+    <AlertState>
+      <Router>
+        <div className="App">
+          <Navbar title = 'github finder' />
+          <div className="container">
+            <Alert />
 
-          <Switch>
+            <Switch>
 
-            <Route exact path = "/" render= {props => (
-              <Fragment>
-                <Search setAlert = {setAlertMsg} />
-                <Users />
-              </Fragment>
-            )} />
+              {/* <Route exact path = "/" render= {props => (
+                <Fragment>
+                  <Search />
+                  <Users />
+                </Fragment>
+              )} /> */}
 
-            <Route exact path = '/about' component={About} />
+              <Route exact path = "/" component={Home}/>
 
-            <Route exact path = '/user/:login' component={User} />
+              <Route exact path = '/about' component={About} />
 
-            {/* render = {props => (
-              <User {...props}  />
-            )} */}
+              <Route exact path = '/user/:login' component={User} />
 
-          </Switch>
+              <Route component = {NotFound} />
 
+              {/* render = {props => (
+                <User {...props}  />
+              )} */}
+
+            </Switch>
+
+          </div>
         </div>
-      </div>
-    </Router>
+      </Router>
+    </AlertState>
   </GithubState>
   );
 }
