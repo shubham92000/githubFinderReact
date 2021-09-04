@@ -1,45 +1,39 @@
-import React, { Component } from 'react';
+import React , {useState , useContext} from 'react';
 import PropTypes from 'prop-types';
+import GithubContext from '../../context/github/githubContext';
 
-class Search extends Component {
+const Search = ({setAlert}) => {
+  const githubContext = useContext(GithubContext);
+  const [text , setText] = useState('');
 
-  state = {
-    text : ''
+  const onChange = (e) => {
+    setText(e.target.value);
   }
 
-  static propTypes = {
-    searchUsers : PropTypes.func.isRequired,
-    clearUsers : PropTypes.func.isRequired,
-    showClear : PropTypes.bool.isRequired,
-    setAlert : PropTypes.func.isRequired
-  }
-
-  onChange = (e) => {
-    this.setState({ [e.target.name] : e.target.value});
-  }
-
-  onSubmit = (e) => {
+  const onSubmit = (e) => {
     // console.log(this.state.text);
     e.preventDefault();
-    if(this.state.text === ''){
-      this.props.setAlert('enter a user' , 'light');
+    if(text === ''){
+      setAlert('enter a user' , 'light');
     }else{
-      this.props.searchUsers(this.state.text);
-      this.setState({text : ""});
+      githubContext.searchUsers(text);
+      setText('');
     }
   }
 
-  render() {
     return (
       <div>
-        <form onSubmit={this.onSubmit} className="form">
-          <input type="text" name="text" placeholder="Search for Users" value={this.state.text} onChange={this.onChange} />
+        <form onSubmit={onSubmit} className="form">
+          <input type="text" name="text" placeholder="Search for Users" value={text} onChange={onChange} />
           <input type="submit" value="Search" className="btn btn-dark btn-block" />
         </form>
-        {this.props.showClear && <button className="btn btn-light btn-block" onClick = {this.props.clearUsers} >clear</button>}
+        {githubContext.users.length > 0 && <button className="btn btn-light btn-block" onClick = {githubContext.clearUsers} >clear</button>}
       </div>
     )
-  }
 }
 
-export default Search
+Search.propTypes = {
+  setAlert : PropTypes.func.isRequired
+};
+
+export default Search;
